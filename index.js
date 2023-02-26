@@ -1,5 +1,5 @@
 const express = require('express')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const cors = require('cors');
  require("dotenv").config();
@@ -15,7 +15,7 @@ app.use(express.json());
   
  const uri = "mongodb+srv://service-review2:nZ93ZiSQe64_$!*@cluster0.lnoy20s.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
- console.log(uri);
+  
 
  async function run() {
   try{
@@ -30,6 +30,13 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
       const query = {}
       const services = await servicesCollection.find(query).limit(3).toArray();
       res.send(services)
+    });
+
+    app.get('/service/:id', async (req, res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const service = await servicesCollection.find(query).toArray() 
+      res.send(service)
     })
 
   }
