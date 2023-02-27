@@ -20,6 +20,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
  async function run() {
   try{
     const servicesCollection = client.db("serviceReview2").collection("services")
+    const reviewCollection = client.db("serviceReview2").collection("review")
 
     app.get('/services', async(req, res) => {
       const query = {}
@@ -37,6 +38,36 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
       const query = {_id: new ObjectId(id)}
       const service = await servicesCollection.find(query).toArray() 
       res.send(service)
+    });
+
+    app.post('/review', async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review)
+      res.send(result)
+    });
+
+    app.get('/reviewss', async(req, res) => {
+       
+      let query = {};
+      if (req.query.titlle){
+        query = {
+          titlle : req.query.titlle
+        }
+      }
+      const reviewss = await reviewCollection.find(query).toArray();
+       res.send(reviewss)
+    });
+
+    app.get('/review', async(req, res) => {
+      let query = {}
+      console.log(req.query.email)
+      if(req.query.email){
+         query= {
+          email: req.query.email
+         }
+      }
+      const reviews = await reviewCollection.find(query).toArray();
+      res.send(reviews)
     })
 
   }
@@ -47,7 +78,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 run().catch(console.log)
 
 app.get('/', async(req, res) => {
-  res.send('service review running ')
+  res.send('service review2 running ')
 })
 
-app.listen(port, () => console.log( `service review running ${port}`))
+app.listen(port, () => console.log( `service review2 running ${port}`))
